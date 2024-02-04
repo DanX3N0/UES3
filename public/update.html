@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Inicio</a></li>
+            <li><a href="update.html">Actualizacion de productos</a></li>
+            <li><a href="delete.html">Eliminar productos</a></li>
+        </ul>    
+    </nav>
+
+    <h1>Lista de productos</h1>
+    <ul id="item-list"></ul>
+
+    <h1>Actualizar Producto</h1>
+    <form id="update-form">
+        <label for="update-id">Seleccionar el producto:</label>
+        <select name="update-product" id="update-product"></select>
+        <br>
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name">
+        <br>
+        <label for="price">Precio:  </label>
+        <input type="text" name="price" id="price">
+        <br>
+        <button type="submit" onclick="updateProduct()">Actualizar Producto</button>
+    </form>
+
+    <script>
+        async function getProductList(){
+            try {
+                const response = await fetch('/catalog')
+                if(!response.ok) {
+                    throw new Error('Error al obtener los productos.')
+                }
+                const products = await response.json()
+                return products
+            } catch (error) {
+                console.log('Error:', error.message);
+                return []
+            }
+        }
+
+        async function idProductSelect() {
+            const updateProductSelect = document.getElementById('update-product')
+            const products = await getProductList()
+            products.products.forEach(product => {
+                const options = document.createElement('option')
+                options.value = product._id
+                console.log(options.value);
+                options.textContent = product.name
+                updateProductSelect.appendChild(options)
+            })
+        }
+
+        async function idProductDetails() {
+          console.log(productId);
+            const productId = document.getElementById('update-product').value
+
+            if(!productId) {
+                alert('Seleccione un producto')
+                return
+            }
+
+            try {
+                const response = await fetch(`/catalog/${productId}`)
+                if(!response.ok) {
+                    throw new Error('Error al obtener los detalles del producto')
+                }
+                const product = await response.json()
+                document.getElementById('name').value = product.name
+                document.getElementById('price').value = product.price
+            } catch (error) {
+                console.log('Error: ', error.message);
+            }
+        }
+
+        async function updateProduct() {
+            const productId = document.getElementById('update-product').value
+            const name = document.getElementById('name').value
+            const price = document.getElementById('price').value
+
+            if(!productId) {
+                alert('Seleccione un producto')
+            }
+
+            try {
+                const response = await fetch(`/catalog/${productId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({name, price}),
+                })
+
+                if(response.ok) {
+                    alert('actualizado correctamente')
+                } else {
+                    alert('Error al actualizar')
+                }
+
+            } catch (error) {
+                console.log('Error: ', error.message);
+            }
+
+        }
+
+        window.onload = function() {
+                idProductSelect()
+            }
+
+    </script>
+
+    <script src="request.js"></script>
+    </body>
+</html>

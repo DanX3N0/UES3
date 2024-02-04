@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="/">Inicio</a></li>
+            <li><a href="update.html">Actualizacion de productos</a></li>
+            <li><a href="delete.html">Borrar productos</a></li>
+        </ul>    
+    </nav>
+
+    <h1>Lista de productos</h1>
+    <ul id="item-list"></ul>
+
+    <h1>Insertar Datos</h1>
+    <form action="/catalog" method="POST">
+        <label for="name">Nombre:</label>
+        <input type="text" name="name" id="name" required>
+        <label for="price">Precio:</label>
+        <input type="text" id="price" name="price" required>
+        <input type="url" id="image" name="image" required>
+        <button type="submit">Agregar nuevo producto</button>
+    </form>
+
+    <script src="request.js"></script>
+
+    </body>
+</html>

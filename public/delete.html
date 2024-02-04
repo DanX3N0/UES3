@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Inicio</a></li>
+            <li><a href="update.html">Actualizar productos</a></li>
+            <li><a href="delete.html">Eliminar productos</a></li>
+        </ul>
+    </nav>
+
+    <h1>Lista de productos</h1>
+    <ul id="item-list"></ul>
+
+    <h1>Eliminacion de datos</h1>    
+    <form id="delete-form">
+        <label for="delete-id">Seleccione producto:</label>
+        <select name="delete-product" id="delete-product"></select>
+        <button type="button" onclick="deleteProduct()">Eliminar producto</button>
+    </form>
+
+    <script>
+        async function getProductList(){
+            try {
+                const response = await fetch('/catalog')
+                if(!response.ok) {
+                    throw new Error('Error al obtener los productos.')
+                }
+                const products = await response.json()
+                return products
+            } catch (error) {
+                console.log('Error:', error.message);
+                return []
+            }
+        }
+
+        async function idProductSelected() {
+            const deleteProductSelected = document.getElementById('delete-product')
+            const products = await getProductList()
+            products.products.forEach(product => {
+                const options = document.createElement('option')
+                options.value = product._id
+                console.log(options.value);
+                options.textContent = product.name
+                deleteProductSelected.appendChild(options)
+            })
+        }
+
+        async function deleteProduct() {
+            const deleteProductId = document.getElementById('delete-product').value
+            if(!deleteProductId) {
+                alert('Seleccione un producto')
+            } 
+            try {
+                const response = await fetch(`/catalog/${deleteProductId}`, {
+                    method: 'DELETE'
+                })
+                if(response.ok) {
+                    alert('Producto eliminado')
+                } else {
+                    throw new Error('Error al eliminar el producto')
+                }
+            } catch (error) {
+                console.log('Error: ', error.message);
+            }
+        }
+
+        window.onload = function() {
+            idProductSelected()
+        }
+
+    </script>
+
+    <script src="request.js"></script>
+</body>
+</html>
